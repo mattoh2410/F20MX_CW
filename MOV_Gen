@@ -1,0 +1,53 @@
+#!/bin/sh
+# =========================================================================================
+# This unix script generates IxNxMxP files of random movement scenarios
+# It uses the setdest utility of ns2 to generate these files  
+# =========================================================================================
+
+clear 	
+				
+mkdir MOV_SCEN	
+cd MOV_SCEN
+
+START=$(date +%s)		
+COUNT=0								# Number of Created Files
+
+X=500								# X in m
+Y=500								# Y in m
+T=100								# Simulation time
+
+for N in 50							# Number of Nodes
+do
+  for S in 25							# Maximum Speed in m/sec        
+  do
+    for P in 25							# Pause Time
+    do
+      for I in 1 2 3						# Iteration Number
+      do
+	date | awk '{ print "Date: "$1" " $3 "-"$2"-"$6 }' 
+	date | awk '{ print "Time: "$4" " $5 }'  
+	echo " " 					
+	echo  "File MOV-N"$N-S$S-P$P-I$I".... Under Creation"  
+	echo  "Please Wait ............................. "
+	/home/matthew/Documents/Uni_Work/Net/CW/NS2_Tools/setdest/setdest \
+	-v 1 -n $N -M $S -p $P -t $T -x $X -y $Y > MOV-N$N-S$S-P$P-I$I
+	echo  "The Movement Scenario "MOV-N$N-S$S-P$P-I$I .... Done!!""
+	COUNT=`expr $COUNT + 1`
+	END=$(date +%s)
+	DIFF=$(( $END - $START ))
+	HOURS=$(( $DIFF / 3600 ))
+	MINUTES=$(( $DIFF / 60 ))
+	if [ "$MINUTES" -ge 60 ]
+	then
+	  MINUTES=$(( $MINUTES % 60 ))
+	fi
+	echo "Now "$COUNT Files Done in $HOURS H:$MINUTES M""
+	echo "======================================================================="
+	echo " "
+	echo " "
+     done
+   done
+  done
+done
+
+exit

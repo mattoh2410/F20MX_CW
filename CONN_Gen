@@ -1,0 +1,52 @@
+#!/bin/sh
+# ==========================================================================================
+# This file generates Number of CBR connection scenarios according to
+# N x CONN values
+# ==========================================================================================
+
+TYPE=$1
+if [ "$TYPE" != "CBR" ] && [ "$TYPE" != "TCP" ] 
+then
+echo "Enter a valid connection type: TCP or CBR"
+exit
+fi
+
+clear								
+mkdir CONN_SCEN
+cd CONN_SCEN
+
+COUNT=0								# Number of Created Files
+SEED=1								# Seed Number
+
+for N in 50 		  					# Number of Nodes 
+do
+  for C in 25		  					# Number of Connections
+  do
+    for E in 1 2 3		  				# Iteration Number
+    do
+      date | awk '{ print "Date: "$1" " $3 "-"$2"-"$6 }' 
+      date | awk '{ print "Time: "$4" " $5 }'  
+      echo " " 
+      if [ "$TYPE" == "CBR" ] 
+      then
+      echo "Creating CBR Connection File CONN-N"$N-C$C-E$E "... Please Wait !!"
+      ns /home/matthew/Documents/Uni_Work/Net/CW/NS2_Tools/cbrgen.tcl \
+      -type cbr -nn $N -seed $SEED -mc $C -rate 4.0 > $TYPE-N$N-C$C-E$E
+      echo "The File "CBR-N$N-C$C-E$E .... Done!!""
+      else
+      echo "Creating TCP Connection File CONN-N"$N-C$C-E$E "... Please Wait !!"
+        ns /home/matthew/Documents/Uni_Work/Net/CW/NS2_Tools/cbrgen.tcl \
+      -type tcp -nn $N -seed $SEED -mc $C > $TYPE-N$N-C$C-E$E
+      echo "The File "TCP-N$N-C$C-E$E .... Done!!""
+      fi
+      SEED=`expr $SEED + 1`
+      COUNT=`expr $COUNT + 1`
+      echo "Now "$COUNT Files Done ""
+      echo "======================================================================="
+      echo ""
+      echo ""
+    done
+  done
+done
+
+exit
